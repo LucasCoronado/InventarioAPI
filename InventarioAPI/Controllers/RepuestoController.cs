@@ -26,5 +26,13 @@ namespace InventarioAPI.Controllers
             // TODO: Llamar al método del repositorio y devolver Ok() con la lista
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Repuesto>> GetById(int id)
+        {
+            var repuestoPorId = await _repository.ObtenerPorId(id);
+
+            return Ok(repuestoPorId);
+        }
+
     }
 }

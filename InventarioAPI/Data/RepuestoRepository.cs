@@ -1,6 +1,7 @@
 ﻿using InventarioAPI.Models;
-using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Collections;
+using System.Data;
 
 namespace InventarioAPI.Data
 {
@@ -42,5 +43,38 @@ namespace InventarioAPI.Data
             }
             return lista;
         }
+
+        public async Task<Repuesto?> ObtenerPorId(int id)
+        {
+            Repuesto? repuesto = null;
+            using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+            {
+                string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos WHERE Id = @Id";
+                
+                using (SqlCommand comando = new SqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Id", id);
+                    await conexion.OpenAsync();
+
+                    using (SqlDataReader reader = await comando.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            repuesto = new Repuesto
+                            {
+                                Id = reader.GetInt32("Id"),
+                                Nombre = reader.GetString("Nombre"),
+                                Marca = reader.GetString("Marca"),
+                                Precio = reader.GetDecimal("Precio"),
+                                Stock = reader.GetInt32("Stock")
+                            };
+                        }
+                    }
+                }
+            }
+            return repuesto;
+            
+        }
+
     }
 }
