@@ -26,10 +26,20 @@ namespace InventarioAPI.Controllers
             // TODO: Llamar al método del repositorio y devolver Ok() con la lista
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Repuesto>> GetById(int id)
         {
+            if (id <= 0)
+            {
+                return BadRequest(new { mensaje = "El ID debe ser un número positivo mayor a cero." });
+            }
+
             var repuestoPorId = await _repository.ObtenerPorId(id);
+
+            if (repuestoPorId == null)
+            {
+                return NotFound(new { mensaje = $"El repuesto con ID {id} no existe." });
+            }
 
             return Ok(repuestoPorId);
         }
