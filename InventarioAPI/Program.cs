@@ -1,4 +1,6 @@
 
+using InventarioAPI.Data;
+
 namespace InventarioAPI
 {
     public class Program
@@ -12,6 +14,8 @@ namespace InventarioAPI
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            builder.Services.AddScoped<RepuestoRepository>();
 
             var app = builder.Build();
 
