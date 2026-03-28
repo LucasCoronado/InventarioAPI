@@ -72,9 +72,32 @@ namespace InventarioAPI.Data
                     }
                 }
             }
-            return repuesto;
-            
+            return repuesto;            
         }
+
+        public async Task<int> Insertar(Repuesto repuestoNuevo)
+        {
+            using(SqlConnection conexion = new SqlConnection(_cadenaConexion))
+            {
+                string query = @"INSERT INTO Repuestos (Nombre, Marca, Precio, Stock)
+                                 VALUES (@Nombre, @Marca, @Precio, @Stock);
+                                 SELECT SCOPE_IDENTITY();";
+                using (SqlCommand comando = new SqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Nombre", repuestoNuevo.Nombre);
+                    comando.Parameters.AddWithValue("@Marca", repuestoNuevo.Marca);
+                    comando.Parameters.AddWithValue("@Precio", repuestoNuevo.Precio);
+                    comando.Parameters.AddWithValue("@Stock", repuestoNuevo.Stock);
+
+                    await conexion.OpenAsync();
+
+                    var resultado = await comando.ExecuteScalarAsync();
+
+                    return Convert.ToInt32(resultado);
+                }
+            }
+        }
+
 
     }
 }

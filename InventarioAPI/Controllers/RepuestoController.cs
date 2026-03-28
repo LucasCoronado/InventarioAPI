@@ -44,5 +44,22 @@ namespace InventarioAPI.Controllers
             return Ok(repuestoPorId);
         }
 
+
+        [HttpPost]
+        public async Task<ActionResult<Repuesto>> Post(Repuesto repuestoNuevo)
+        {
+            if (string.IsNullOrEmpty(repuestoNuevo.Nombre) || repuestoNuevo.Precio <= 0)
+            {
+                return BadRequest(new { mensaje = "Datos inválidos. El nombre es obligatorio y el precio debe ser mayor a 0." });
+            }
+
+            int nuevoId = await _repository.Insertar(repuestoNuevo);
+            repuestoNuevo.Id = nuevoId;
+
+            return CreatedAtAction(nameof(GetById), new { id = repuestoNuevo.Id }, repuestoNuevo);
+
+        }
+
+
     }
 }
