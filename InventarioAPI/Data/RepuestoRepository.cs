@@ -123,5 +123,26 @@ namespace InventarioAPI.Data
             }
         }
 
+        public async Task<bool> Eliminar(int id)
+        {
+            using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+            {
+                // El WHERE Id = @Id es VITAL. Sin eso, vaciás la tabla.
+                string query = "DELETE FROM Repuestos WHERE Id = @Id";
+
+                using (SqlCommand comando = new SqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Id", id);
+
+                    await conexion.OpenAsync();
+                    int filasAfectadas = await comando.ExecuteNonQueryAsync();
+
+                    // Si filasAfectadas es 1, significa que el registro existía y se borró.
+                    return filasAfectadas > 0;
+                }
+            }
+        }
+
+
     }
 }

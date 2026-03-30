@@ -80,6 +80,22 @@ namespace InventarioAPI.Controllers
 
         }
 
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // 1. Intentamos eliminar
+            bool eliminado = await _repository.Eliminar(id);
+
+            // 2. Si el ID no existía, avisamos con un 404
+            if (!eliminado)
+            {
+                return NotFound(new { mensaje = $"No se pudo eliminar: el repuesto con ID {id} no existe." });
+            }
+
+            // 3. Si tuvo éxito, devolvemos 204 No Content
+            // Es el estándar: "Hice lo que pediste y ya no hay nada que mostrar ahí".
+            return NoContent();
+        }
 
     }
 }
