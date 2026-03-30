@@ -98,6 +98,30 @@ namespace InventarioAPI.Data
             }
         }
 
+        public async Task<bool> Actualizar(Repuesto repuesto)
+        {
+            using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+            {
+                string query = @"UPDATE Repuestos 
+                                 SET Nombre = @Nombre, Marca = @Marca, Precio = @Precio, Stock = @Stock
+                                 WHERE Id = @Id";
+
+                using (SqlCommand comando = new SqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Id", repuesto.Id);
+                    comando.Parameters.AddWithValue("@Nombre", repuesto.Nombre);
+                    comando.Parameters.AddWithValue("@Marca", repuesto.Marca);
+                    comando.Parameters.AddWithValue("@Precio", repuesto.Precio);
+                    comando.Parameters.AddWithValue("@Stock", repuesto.Stock);
+
+                    await conexion.OpenAsync();
+
+                    var filasAfectadas = await comando.ExecuteNonQueryAsync();
+
+                    return filasAfectadas > 0;
+                }
+            }
+        }
 
     }
 }

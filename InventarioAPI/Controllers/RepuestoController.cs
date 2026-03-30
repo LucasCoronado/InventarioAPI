@@ -60,6 +60,26 @@ namespace InventarioAPI.Controllers
 
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put(int id, Repuesto repuestoEditado)
+        {
+
+            if(id != repuestoEditado.Id)
+            {
+                return BadRequest(new { mensaje = "El ID de la URL no coincide con el ID del objeto." });
+            }
+
+            bool exito = await _repository.Actualizar(repuestoEditado);
+
+            if (!exito)
+            {
+                return NotFound(new { mensaje = $"No se encontro el repuesto con ID {id} para actualizar." });
+            }
+
+            return NoContent();
+
+        }
+
 
     }
 }
