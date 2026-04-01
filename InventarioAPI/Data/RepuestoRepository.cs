@@ -19,27 +19,41 @@ namespace InventarioAPI.Data
         {
             var lista = new List<Repuesto>();
 
-            using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+            try
             {
-                string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos";
-                using (SqlCommand comando = new SqlCommand(query, conexion))
+                using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
                 {
-                    await conexion.OpenAsync(); 
-
-                    using (SqlDataReader reader = await comando.ExecuteReaderAsync())
+                    string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos";
+                    using (SqlCommand comando = new SqlCommand(query, conexion))
                     {
-                        while (await reader.ReadAsync()) {
-                            lista.Add(new Repuesto
+                        await conexion.OpenAsync();
+
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
                             {
-                                Id = reader.GetInt32("Id"),
-                                Nombre = reader.GetString("Nombre"),
-                                Marca = reader.GetString("Marca"),
-                                Precio = reader.GetDecimal("Precio"),
-                                Stock = reader.GetInt32("Stock")
-                            });
+                                lista.Add(new Repuesto
+                                {
+                                    Id = reader.GetInt32("Id"),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Marca = reader.GetString("Marca"),
+                                    Precio = reader.GetDecimal("Precio"),
+                                    Stock = reader.GetInt32("Stock")
+                                });
+                            }
                         }
                     }
                 }
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine($"Error de base de datos: {ex.Message}");
+                throw new Exception("No pudimos conectarnos a la base de datos de repuestos.");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error inesperado: {ex.Message}");
+                throw;
             }
             return lista;
         }

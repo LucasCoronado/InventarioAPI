@@ -20,10 +20,22 @@ namespace InventarioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Repuesto>>> Get()
         {
+            try
+            {               
             var lista = await _repository.ObtenerTodos();
-
             return Ok(lista);
-            // TODO: Llamar al método del repositorio y devolver Ok() con la lista
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    status = 500,
+                    title = "Error Interno del Servidor",
+                    detail = ex.Message
+                });
+            }
+            
+
         }
 
         [HttpGet("{id:int}")]
