@@ -18,11 +18,11 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Repuesto>>> Get()
+        public async Task<ActionResult<List<Repuesto>>> Get([FromQuery] string? buscar)
         {
             try
             {               
-            var lista = await _repository.ObtenerTodos();
+            var lista = await _repository.ObtenerTodos(buscar);
             return Ok(lista);
             }
             catch(Exception ex)

@@ -15,7 +15,7 @@ namespace InventarioAPI.Data
             _cadenaConexion = configuration.GetConnectionString("CadenaSQL") ?? "";
         }
 
-        public async Task<List<Repuesto>> ObtenerTodos()
+        public async Task<List<Repuesto>> ObtenerTodos(string? busqueda = null)
         {
             var lista = new List<Repuesto>();
 
@@ -24,8 +24,16 @@ namespace InventarioAPI.Data
                 using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
                 {
                     string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos";
+                    if (!string.IsNullOrEmpty(busqueda))
+                    {
+                        query += " WHERE Nombre LIKE @busqueda OR Marca LIKE @busqueda";
+                    }
                     using (SqlCommand comando = new SqlCommand(query, conexion))
                     {
+                        if (!string.IsNullOrEmpty(busqueda))
+                        {
+                            comando.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                        }
                         await conexion.OpenAsync();
 
                         using (SqlDataReader reader = await comando.ExecuteReaderAsync())
