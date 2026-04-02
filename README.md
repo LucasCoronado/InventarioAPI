@@ -31,7 +31,6 @@ Actualmente, la API permite:
 1. Clonar el repositorio.
 2. Configurar la cadena de conexión en `appsettings.json`.
 3. Ejecutar el script SQL (ubicado en `/Scripts`) para crear la tabla `Repuestos`. 
-   * **Nota:** Asegúrese de incluir la columna `Activo BIT DEFAULT 1`.
 4. Correr la aplicación con `dotnet watch`.
 
 
