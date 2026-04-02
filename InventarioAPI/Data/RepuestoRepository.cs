@@ -23,10 +23,10 @@ namespace InventarioAPI.Data
             {
                 using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
                 {
-                    string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos";
+                    string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos WHERE Activo = 1";
                     if (!string.IsNullOrEmpty(busqueda))
                     {
-                        query += " WHERE Nombre LIKE @busqueda OR Marca LIKE @busqueda";
+                        query += " AND (Nombre LIKE @busqueda OR Marca LIKE @busqueda)";
                     }
                     using (SqlCommand comando = new SqlCommand(query, conexion))
                     {
@@ -71,7 +71,7 @@ namespace InventarioAPI.Data
             Repuesto? repuesto = null;
             using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
             {
-                string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos WHERE Id = @Id";
+                string query = "SELECT Id, Nombre, Marca, Precio, Stock FROM Repuestos WHERE Id = @Id AND Activo =1";
                 
                 using (SqlCommand comando = new SqlCommand(query, conexion))
                 {
@@ -126,7 +126,7 @@ namespace InventarioAPI.Data
             {
                 string query = @"UPDATE Repuestos 
                                  SET Nombre = @Nombre, Marca = @Marca, Precio = @Precio, Stock = @Stock
-                                 WHERE Id = @Id";
+                                 WHERE Id = @Id AND Activo = 1";
 
                 using (SqlCommand comando = new SqlCommand(query, conexion))
                 {
@@ -149,17 +149,14 @@ namespace InventarioAPI.Data
         {
             using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
             {
-                // El WHERE Id = @Id es VITAL. Sin eso, vaciás la tabla.
-                string query = "DELETE FROM Repuestos WHERE Id = @Id";
+                string query = "UPDATE Repuestos SET Activo = 0 WHERE Id = @id";
 
                 using (SqlCommand comando = new SqlCommand(query, conexion))
                 {
                     comando.Parameters.AddWithValue("@Id", id);
-
                     await conexion.OpenAsync();
                     int filasAfectadas = await comando.ExecuteNonQueryAsync();
 
-                    // Si filasAfectadas es 1, significa que el registro existía y se borró.
                     return filasAfectadas > 0;
                 }
             }

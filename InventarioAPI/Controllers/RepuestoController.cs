@@ -45,15 +45,21 @@ namespace InventarioAPI.Controllers
             {
                 return BadRequest(new { mensaje = "El ID debe ser un número positivo mayor a cero." });
             }
-
-            var repuestoPorId = await _repository.ObtenerPorId(id);
-
-            if (repuestoPorId == null)
+            try
             {
-                return NotFound(new { mensaje = $"El repuesto con ID {id} no existe." });
-            }
+                var repuestoPorId = await _repository.ObtenerPorId(id);
 
-            return Ok(repuestoPorId);
+                if (repuestoPorId == null)
+                {
+                    return NotFound(new { mensaje = $"No se encontro el repuesto con ID {id}." });
+                }
+
+                return Ok(repuestoPorId);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new { title = "Error al obtener repuesto", detail = ex.Message });
+            }
         }
 
 
@@ -81,32 +87,45 @@ namespace InventarioAPI.Controllers
                 return BadRequest(new { mensaje = "El ID de la URL no coincide con el ID del objeto." });
             }
 
-            bool exito = await _repository.Actualizar(repuestoEditado);
-
-            if (!exito)
+            try
             {
-                return NotFound(new { mensaje = $"No se encontro el repuesto con ID {id} para actualizar." });
-            }
+                bool exito = await _repository.Actualizar(repuestoEditado);
 
-            return NoContent();
+                if (!exito)
+                {
+                    return NotFound(new { mensaje = $"No se encontro el repuesto con ID {id} para actualizar." });
+                }
+
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new { title = "Error al actualizar", detail = ex.Message });
+            }
 
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            // 1. Intentamos eliminar
-            bool eliminado = await _repository.Eliminar(id);
-
-            // 2. Si el ID no existía, avisamos con un 404
-            if (!eliminado)
+            try
             {
-                return NotFound(new { mensaje = $"No se pudo eliminar: el repuesto con ID {id} no existe." });
-            }
+                //Intenta eliminar
+                bool eliminado = await _repository.Eliminar(id);
 
-            // 3. Si tuvo éxito, devolvemos 204 No Content
-            // Es el estándar: "Hice lo que pediste y ya no hay nada que mostrar ahí".
-            return NoContent();
+                //Si el ID no existía 404
+                if (!eliminado)
+                {
+                    return NotFound(new { mensaje = $"No se encontró un repuesto activo con el ID {id}" });
+                }
+
+                //Si tuvo éxito 204 No Content
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new { title = "Error al eliminar", detail = ex.Message });
+            }
         }
 
     }
